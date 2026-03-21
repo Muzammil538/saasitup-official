@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      // Admin SDK bypasses these rules, so we don't strictly need admin rules here unless client accesses it.
+      // But for safety:
+      allow read, write: if false; 
+    }
+    
+    match /projects/{projectId} {
+      allow read, write: if false; // Only allow access via Admin SDK (API routes)
+    }
+  }
+}
